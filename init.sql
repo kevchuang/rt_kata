@@ -1,3 +1,8 @@
+CREATE DATABASE "kata"
+  WITH OWNER = postgres
+       ENCODING = 'UTF8'
+       CONNECTION LIMIT = -1;
+
 CREATE TABLE public."account" (
   account_id SERIAL NOT NULL,
   balance bigint NOT NULL DEFAULT 0,

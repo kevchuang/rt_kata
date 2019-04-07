@@ -1,0 +1,26 @@
+version: "3"
+services: 
+    api_kata:
+        image: api_kata
+        container_name: api_kata
+        restart: always
+        ports: 
+          - 8086:8086
+        networks:
+            - kata
+            - open
+    db_kata:
+        image: postgres:11.2
+        container_name: db_kata
+        restart: always
+        environment:
+            POSTGRES_PASSWORD: postgres
+        volumes:
+            - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+        networks:
+            - kata
+
+networks:
+    kata: {}
+    open:
+      external: true 
