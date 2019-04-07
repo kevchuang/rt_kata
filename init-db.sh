@@ -1,7 +1,13 @@
+set e
+
+psql -U postgres <<-EOSQL
 CREATE DATABASE "kata"
   WITH OWNER = postgres
        ENCODING = 'UTF8'
        CONNECTION LIMIT = -1;
+EOSQL
+
+psql -q -U postgres -d kata <<-EOSQL
 
 CREATE TABLE public."account" (
   account_id SERIAL NOT NULL,
@@ -36,7 +42,8 @@ CREATE OR REPLACE FUNCTION public.insert_operation()
     LANGUAGE 'plpgsql'
     VOLATILE
     COST 100
-AS $BODY$BEGIN
+AS \$BODY\$
+BEGIN
 	IF OLD.balance > NEW.balance THEN
 		INSERT INTO operation (date, account_id, amount, balance, operation_type)
 		VALUES (now(), NEW.account_id, OLD.balance - NEW.balance, NEW.balance, 'withdrawal');
@@ -46,10 +53,12 @@ AS $BODY$BEGIN
 	END IF;
 
 	RETURN NEW;
-END;$BODY$;
+END;
+\$BODY\$;
 
 CREATE TRIGGER last_operation
     BEFORE UPDATE
     ON public.account
     FOR EACH ROW
     EXECUTE PROCEDURE public.insert_operation();
+EOSQL
