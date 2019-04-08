@@ -1,4 +1,4 @@
-set e
+set -e
 
 psql -U postgres <<-EOSQL
 CREATE DATABASE "kata"
