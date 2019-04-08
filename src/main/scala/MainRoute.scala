@@ -7,7 +7,7 @@ import spray.json._
 
 trait MainRoute extends MessagesJsonSupport with BankJsonSupport {
 
-  private val requestHandler = new RequestHandler(Database.getConnection)
+  private val requestHandler = RequestHandler(KataDatabase())
 
   private val corsHeaders = List(
     `Access-Control-Allow-Headers`("request-header", "accept", "content-type"),
@@ -25,6 +25,10 @@ trait MainRoute extends MessagesJsonSupport with BankJsonSupport {
       case e: BadRequestException =>
         extractUri { _ =>
           complete(HttpResponse(400, entity = HttpEntity(ContentTypes.`application/json`, ErrorMessage(400, e.getValue).toJson.compactPrint)))
+        }
+      case e: MatchError =>
+        extractUri { _ =>
+          complete(HttpResponse(400, entity = HttpEntity(ContentTypes.`application/json`, ErrorMessage(400, "wrong value in parameters").toJson.compactPrint)))
         }
       case e: NotFoundException =>
         extractUri { _ =>

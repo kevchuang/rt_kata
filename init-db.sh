@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 set e
 
 psql -U postgres <<-EOSQL
@@ -9,20 +8,17 @@ CREATE DATABASE "kata"
 EOSQL
 
 psql -q -U postgres -d kata <<-EOSQL
-
 CREATE TABLE public."account" (
   account_id SERIAL NOT NULL,
   balance bigint NOT NULL DEFAULT 0,
+  name TEXT NOT NULL,
   CONSTRAINT account_id PRIMARY KEY (account_id)
 )
 WITH (
   OIDS = FALSE
 );
-
 ALTER TABLE public."account"
   OWNER TO postgres;
-
-
 CREATE TABLE public."operation" (
   operation_id SERIAL NOT NULL,
   date timestamp without time zone NOT NULL,
@@ -34,10 +30,8 @@ CREATE TABLE public."operation" (
 WITH (
   OIDS = FALSE
 );
-
 ALTER TABLE public."operation"
   OWNER TO postgres;
-
 CREATE OR REPLACE FUNCTION public.insert_operation()
     RETURNS trigger
     LANGUAGE 'plpgsql'
@@ -52,11 +46,9 @@ BEGIN
 		INSERT INTO operation (date, account_id, amount, balance, operation_type)
 		VALUES (now(), NEW.account_id, NEW.balance - OLD.balance, NEW.balance, 'deposit');
 	END IF;
-
 	RETURN NEW;
 END;
 \$BODY\$;
-
 CREATE TRIGGER last_operation
     BEFORE UPDATE
     ON public.account

@@ -12,12 +12,13 @@ case class Operation (
 
 case class Account (
                     account_id: Int,
-                    balance: Int
+                    balance: Int,
+                    name: String
                    )
 
 trait BankJsonSupport extends DefaultJsonProtocol with SprayJsonSupport {
 
   implicit val operationFormat  : RootJsonFormat[Operation]  = jsonFormat6(Operation)
-  implicit val accountFormat    : RootJsonFormat[Account]    = jsonFormat2(Account)
+  implicit val accountFormat    : RootJsonFormat[Account]    = jsonFormat3(Account)
 
 }

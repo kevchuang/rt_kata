@@ -1,4 +1,4 @@
-name := "sg_exercice"
+name := "rt_kata"
 
 version := "0.1"
 
@@ -24,7 +24,13 @@ lazy val akkaHttpDependencies = Seq (
   "com.typesafe.akka" %% "akka-http-testkit"    % akkaHttpVersion
 )
 
+lazy val testDependencies = Seq (
+  "org.scalatest" %% "scalatest" % "3.0.5" % Test,
+  "org.scalamock" %% "scalamock" % "4.1.0" % Test
+)
+
 libraryDependencies ++= akkaHttpDependencies
 libraryDependencies ++= akkaDependencies
+libraryDependencies ++= testDependencies
 libraryDependencies += "com.typesafe" % "config" % "1.3.2"
 libraryDependencies += "org.postgresql" % "postgresql" % "42.1.1"
