@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 set e
 
 psql -U postgres <<-EOSQL

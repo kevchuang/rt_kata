@@ -7,7 +7,7 @@ import spray.json._
 
 trait MainRoute extends MessagesJsonSupport with BankJsonSupport {
 
-  private val requestHandler = new RequestHandler(KataDatabase())
+  private val requestHandler = RequestHandler(KataDatabase())
 
   private val corsHeaders = List(
     `Access-Control-Allow-Headers`("request-header", "accept", "content-type"),

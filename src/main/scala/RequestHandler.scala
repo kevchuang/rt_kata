@@ -1,14 +1,17 @@
+object RequestHandler {
+  val DEPOSIT = "deposit"
+  val WITHDRAWAL = "withdrawal"
+
+  def apply(database: Database): RequestHandler = new RequestHandler(database)
+}
 
 class RequestHandler(database: Database) {
 
-  private val DEPOSIT = "deposit"
-  private val WITHDRAWAL = "withdrawal"
-
   private def getUpdateBalance(operation: String, currentBalance: Int, amount: Int): Int = {
     operation match {
-      case DEPOSIT =>
+      case RequestHandler.DEPOSIT =>
         currentBalance + amount
-      case WITHDRAWAL =>
+      case RequestHandler.WITHDRAWAL =>
         currentBalance - amount
     }
   }
@@ -28,7 +31,6 @@ class RequestHandler(database: Database) {
 
   def makeOperation(operation: String, amount: Int, accountId: Int): MessageResponse = {
     val accountBalance = database.getAccountById(accountId)
-    println(s"here $accountBalance")
     accountBalance map { account =>
       val updateBalance = getUpdateBalance(operation, account.balance, amount)
       if (updateBalance < 0)
