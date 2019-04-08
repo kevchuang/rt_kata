@@ -7,7 +7,7 @@ import spray.json._
 
 trait MainRoute extends MessagesJsonSupport with BankJsonSupport {
 
-  implicit val errorMessageJson = jsonFormat2(ErrorMessage)
+  private val requestHandler = new RequestHandler(Database.getConnection)
 
   private val corsHeaders = List(
     `Access-Control-Allow-Headers`("request-header", "accept", "content-type"),
@@ -20,7 +20,19 @@ trait MainRoute extends MessagesJsonSupport with BankJsonSupport {
     ExceptionHandler {
       case e: NumberFormatException =>
         extractUri { _ =>
-          complete(HttpResponse(400, entity = HttpEntity(ContentTypes.`application/json`, ErrorMessage("400", "malformation on request").toJson.compactPrint)))
+          complete(HttpResponse(400, entity = HttpEntity(ContentTypes.`application/json`, ErrorMessage(400, s"malformation on request: ${e.getMessage}").toJson.compactPrint)))
+        }
+      case e: BadRequestException =>
+        extractUri { _ =>
+          complete(HttpResponse(400, entity = HttpEntity(ContentTypes.`application/json`, ErrorMessage(400, e.getValue).toJson.compactPrint)))
+        }
+      case e: NotFoundException =>
+        extractUri { _ =>
+          complete(HttpResponse(404, entity = HttpEntity(ContentTypes.`application/json`, ErrorMessage(404, e.getValue).toJson.compactPrint)))
+        }
+      case e: ServerErrorException =>
+        extractUri { _ =>
+          complete(HttpResponse(500, entity = HttpEntity(ContentTypes.`application/json`, ErrorMessage(500, e.getValue).toJson.compactPrint)))
         }
     }
   
@@ -30,18 +42,23 @@ trait MainRoute extends MessagesJsonSupport with BankJsonSupport {
         path("operations") {
             get {
               parameter('account_id) { accountId =>
-                complete(Database.getOperations(accountId.toInt))
+                complete(requestHandler.getOperations(accountId.toInt))
               }
             } ~
             post {
               parameter('type, 'amount, 'account_id) { (operationType, amount, accountId) =>
-                complete(Database.makeOperation(operationType, amount.toInt, accountId.toInt))
+                complete(requestHandler.makeOperation(operationType, amount.toInt, accountId.toInt))
               }
             }
           } ~ path("account") {
             get {
               parameter("id") { accountId =>
-                complete(Database.getAccountBalance(accountId.toInt))
+                complete(requestHandler.getAccountBalance(accountId.toInt))
+              }
+            } ~
+            post {
+              parameter('name) { name =>
+                complete(requestHandler.createAccount(name))
               }
             }
         }

@@ -2,13 +2,17 @@ import akka.actor.{Actor, ActorLogging, ActorSystem, Props}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.Http.ServerBinding
 import akka.stream.ActorMaterializer
+import com.typesafe.config.ConfigFactory
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
 object WebServer {
 
-  def props(host: String, port: Int) : Props = Props (new WebServer(host, port))
+  private val config = ConfigFactory.load
+  private val hostConfig = config.getString("web-server.host")
+  private val portConfig = config.getInt("web-server.port")
+  def props() : Props = Props (new WebServer(hostConfig, portConfig))
 
 }
 

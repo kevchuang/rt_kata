@@ -6,5 +6,5 @@ object Kata extends App {
   val config = Configuration
   val port = config.webServer.port
 
-  system.actorOf (WebServer.props("0.0.0.0", port), "web-server")
+  system.actorOf (WebServer.props(), "web-server")
 }
