@@ -6,12 +6,15 @@
 # Configuration
   
   First, create a docker network.
+  
   `docker network create kata`
   
   Then build the docker image.
+  
   `docker build -t api_kata .`
   
   And finally run the containers. It will create 2 containers (api_kata and db_kata), the api_kata containers is bind on port 8086.
+  
   `docker-compose up`
   
   
